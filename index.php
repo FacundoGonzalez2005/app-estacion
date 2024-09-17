@@ -22,24 +22,23 @@
 		$seccion = "error404";
 	}
 
-
 	// === firewall
-
+	$aux=0;
+	
 	// listas de acceso por tipo de usuario
 	$seccion_anonimo = ["landing", "detalle", "panel"];
 
-	// si el usuario esta logueado
-	if(isset($_SESSION['estacion'])){
-		// recorro la lista de secciones no permitidas
-		foreach ($seccion_anonimo as $key => $value) {
-			if($value==$seccion){
-				$seccion = "landing";
-				break;
-			}
+	// recorro la lista de secciones no permitidas
+	foreach ($seccion_anonimo as $key => $value) {
+		if($value==$seccion){
+			$aux++;
 		}
-
 	}
 
+
+	if ($aux==0) {
+		$seccion = "error404";
+	}
 	// === fin firewall
 
 	// Carga del controlador
