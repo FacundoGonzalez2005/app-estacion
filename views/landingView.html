@@ -4,11 +4,13 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Landing</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+	<link rel="stylesheet" type="text/css" href="./views/css/styles.css">
 </head>
 <body>
 	<!-- {{PROJECT_WEB}} -->
 	<div class="contenedor-landing">
-		<header class="Presentacion">
+		<header class="presentacion">
 			<div class="titulo">
 				{{PROJECT_NAME}}
 			</div>
@@ -17,18 +19,18 @@
 			</div>
 		</header>
 		<section class="boton">
-				<button><a href="panel">Ir al panel</a></button>
+				Ir a panel
+				<i class="fa-solid fa-right-long"></i>
+				<button><a class="boton-panel" href="panel">Panel</a></button>
 		</section>
 		<footer class="informacion-autor">
 			<div class="autor">
-				{{PROJECT_AUTHOR}}
+				Autor: {{PROJECT_AUTHOR}}
 			</div>
 			<div class="correo">
-				{{PROJECT_AUTHOR_CONTACT}}
+				Gmail: {{PROJECT_AUTHOR_CONTACT}}
 			</div>
 		</footer>
 	</div>
-	<br><br>
-	<br><br>
 </body>
 </html>
