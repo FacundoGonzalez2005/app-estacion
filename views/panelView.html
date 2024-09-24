@@ -1,20 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Panel</title>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 	<link rel="stylesheet" type="text/css" href="./views/css/styles.css">
+	<link rel="stylesheet" href="./views/css/material-icons.css">
 </head>
 <body>
 
-<!--{{PROJECT_NAME}}
-	{{PROJECT_DESCRIPTION}}
-	Autor: {{PROJECT_AUTHOR}}
-	Gmail: {{PROJECT_AUTHOR_CONTACT}}
-	Url: {{PROJECT_WEB}}
-	Cantidad de estaciones guardadas: {{CANT_LUGARES}}
--->
+	<!--
+		{{PROJECT_NAME}}
+		{{PROJECT_DESCRIPTION}}
+		Autor: {{PROJECT_AUTHOR}}
+		Gmail: {{PROJECT_AUTHOR_CONTACT}}
+		Url: {{PROJECT_WEB}}
+		Cantidad de estaciones guardadas: {{CANT_LUGARES}}
+	-->
+
 	<div class="title-top">
 		<h1>ESTACIONES</h1>
 	</div>
@@ -29,16 +34,26 @@
 
 				loadEstaciones().then(data => {
 
+					console.log(data)
+
 					let listado = document.querySelector("#Listado-estaciones")
 			
 
 					for (var i = data.length - 1; i >= 0; i--) {
-						console.log("Hola");
 						listado.innerHTML += `
-						<div class="ubi">
-							<a class="texto" href="/alumno/6916/app-estacion/detalle?chipid=${data[i].chipid}&&cant=1">${data[i].ubicacion}
-							</a>
-						</div><br>`
+						<a class="tarjeta" href="/alumno/6916/app-estacion/detalle?chipid=${data[i].chipid}&&cant=1">
+							<div class="texto">
+								<div class="apodo">
+									${data[i].apodo}
+								</div>
+								<div class="ubicacion">
+									<i class="fa-solid fa-location-dot"></i>${data[i].ubicacion}
+								</div>
+								<div class="visitas">
+									<i class="fa-regular fa-eye"></i>${data[i].visitas}
+								</div>
+							</div>
+						</a>`
 					
 					}
 

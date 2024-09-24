@@ -18,27 +18,71 @@ body{
 .title-top{
 	font-family: "Oswald";
 	text-align: center;
+	min-height: auto;
+	margin-bottom: 5%;
+	font-size: 25px;
 }
 
 a{
 	color: white;
-	filter: blur(0);
 }
-.ubi{
+
+#Listado-estaciones{
+	height: 100%;
+	width: 100%;
 	display: flex;
-	width: 300px;
-	height: 100px;
-	backdrop-filter: blur(5px);
+	gap: 50px;
+	flex-wrap: wrap;
+	justify-content: center;
+	padding-bottom: 5%;
+}
+
+.tarjeta{
+	display: flex;
+	width: 400px;
+	min-height: auto;
+	padding: 2%;
+	backdrop-filter: blur(10px);
 	border-radius: 15px;
 	border: solid;
 	align-items: center;
 	justify-content: center;
+	flex-direction: column;
+	gap: 5%;
 
 }
+
 .texto{
+	height: 100%;
+	width: 100%;
 	display: flex;
 	font-family: "ubuntu";
 	z-index: 10;
 	font-weight: 600;
 	font-size: 20px;
+	flex-direction: column;
+	gap: 15%;
+	.apodo{
+		display: flex;
+		font-weight: 700;
+		font-size: 25px;
+	}
+	.ubicacion{
+		display: flex;
+		gap: 2%;
+		font-weight: 600;
+		font-size: 17px;
+		i{
+			color: red;
+		}
+	}
+	.visitas{
+		display: flex;
+		width: 100%;
+		justify-content: right;
+		padding-right: 5%;
+		padding-bottom: 5%;
+		gap: 2%;
+		font-weight: 400;
+	}
 }
