@@ -35,7 +35,6 @@
 		}
 	}
 
-
 	if ($aux==0) {
 		$seccion = "error404";
 	}

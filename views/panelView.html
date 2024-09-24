@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Panel</title>
+	<link rel="stylesheet" type="text/css" href="./views/css/styles.css">
 </head>
 <body>
 
@@ -14,18 +15,43 @@
 	Url: {{PROJECT_WEB}}
 	Cantidad de estaciones guardadas: {{CANT_LUGARES}}
 -->
-	<h1>ESTACIONES</h1>
+	<div class="title-top">
+		<h1>ESTACIONES</h1>
+	</div>
 
-	<a class="estacion" href="detalle">
-		<div class="nombre">
-			Nombre
-		</div>
-		<div class="ubicacion">
-			ubicacion
-		</div>
-		<div class="visitas">
-			visitas
-		</div>
-	</a>
+	<div id="Listado-estaciones">
+
+	</div>
+
+	<script type="text/javascript">
+
+			document.addEventListener("DOMContentLoaded", () => {
+
+				loadEstaciones().then(data => {
+
+					let listado = document.querySelector("#Listado-estaciones")
+			
+
+					for (var i = data.length - 1; i >= 0; i--) {
+						console.log("Hola");
+						listado.innerHTML += `
+						<div class="ubi">
+							<a class="texto" href="/alumno/6916/app-estacion/detalle?chipid=${data[i].chipid}&&cant=1">${data[i].ubicacion}
+							</a>
+						</div><br>`
+					
+					}
+
+				})
+			})
+
+
+		async function loadEstaciones(){
+			const response = await fetch("https://mattprofe.com.ar/proyectos/app-estacion/datos.php?mode=list-stations")
+			const data = await response.json()			
+			return data
+		}
+
+	</script>
 </body>
 </html>

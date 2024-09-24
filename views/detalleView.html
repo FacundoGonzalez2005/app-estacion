@@ -6,12 +6,54 @@
 	<title>Detalles</title>
 </head>
 <body>
-<!--{{PROJECT_NAME}}
-	{{PROJECT_DESCRIPTION}}
-	Autor: {{PROJECT_AUTHOR}}
-	Gmail: {{PROJECT_AUTHOR_CONTACT}}
-	Url: {{PROJECT_WEB}}
-	Cantidad de estaciones guardadas: {{CANT_LUGARES}}
--->
+	<!--{{PROJECT_NAME}}
+		{{PROJECT_DESCRIPTION}}
+		Autor: {{PROJECT_AUTHOR}}
+		Gmail: {{PROJECT_AUTHOR_CONTACT}}
+		Url: {{PROJECT_WEB}}
+		Cantidad de estaciones guardadas: {{CANT_LUGARES}}
+	-->
+
+	<h1>DETALLE DE ESTACION</h1>
+
+	<div id="Listado-estaciones">
+
+	</div>
+
+	<script type="text/javascript">
+
+		// Evento que se ejecuta cuando se carga la pagina totalmente
+		document.addEventListener("DOMContentLoaded", () => {
+
+			// Ejemplo de uso
+			const parametro = getParameterByName('chipid');
+			buscar(parametro).then(data => {
+
+				console.log(data)
+
+				let listado = document.querySelector("#Listado-estaciones")
+					data.forEach(estaciones => {
+						listado.innerHTML +=`
+							${estaciones.ubicacion}
+						`
+					})	
+			})
+		})
+
+		function getParameterByName(name) {
+	    	const urlParams = new URLSearchParams(window.location.search);
+	    	return urlParams.get(name);
+		}
+		
+		// Hace la peticion asincrona al archivo php y recupera el Json con los datos
+	    async function buscar(parametro){
+	        /*< consulta a la API */
+	        const response = await fetch("https://mattprofe.com.ar/proyectos/app-estacion/datos.php?chipid="+parametro+ "&&cant=1");
+	        /*< convierte la respuesta a formato json */
+	        const data = await response.json();
+	        return data;
+	    }
+
+	</script>
 </body>
 </html>
