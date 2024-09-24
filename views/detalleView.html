@@ -4,6 +4,8 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Detalles</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+	<link rel="stylesheet" type="text/css" href="./views/css/styles.css">
 </head>
 <body>
 	<!--{{PROJECT_NAME}}
@@ -13,8 +15,10 @@
 		Url: {{PROJECT_WEB}}
 		Cantidad de estaciones guardadas: {{CANT_LUGARES}}
 	-->
-
-	<h1>DETALLE DE ESTACION</h1>
+	<div class="title-top">
+		<h1>DETALLE ESTACION</h1>		
+	</div>
+	
 
 	<div id="Listado-estaciones">
 
@@ -34,7 +38,16 @@
 				let listado = document.querySelector("#Listado-estaciones")
 					data.forEach(estaciones => {
 						listado.innerHTML +=`
-							${estaciones.ubicacion}
+						<div class="tarjeta-detalle">
+							<div class="texto">
+								<div class="apodo">
+									${estaciones.estacion}
+								</div>
+								<div class="ubicacion">
+									<i class="fa-solid fa-location-dot"></i>${estaciones.ubicacion}
+								</div>
+							</div>
+						</div>	
 						`
 					})	
 			})
