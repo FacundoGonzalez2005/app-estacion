@@ -15,8 +15,14 @@
 		Url: {{PROJECT_WEB}}
 		Cantidad de estaciones guardadas: {{CANT_LUGARES}}
 	-->
-	<div class="title-top">
-		<h1>DETALLE ESTACION</h1>		
+
+	<div class="encabezado">
+		<div class="icono">
+			<a href="panel"><i class="fa-solid fa-left-long"></i></a>
+		</div>
+		<div class="title-top">
+			<h1>DETALLE ESTACION</h1>
+		</div>
 	</div>
 	
 
@@ -38,7 +44,7 @@
 				let listado = document.querySelector("#Listado-estaciones")
 					data.forEach(estaciones => {
 						listado.innerHTML +=`
-						<div class="tarjeta-detalle">
+						<div class="tarjeta-detalle detalle">
 							<div class="texto">
 								<div class="apodo">
 									${estaciones.estacion}

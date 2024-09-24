@@ -22,7 +22,7 @@
 	$_ENV["PROJECT_DESCRIPTION"] = "Bienvenido al app estación, podes consultar el estado del tiempo con diferentes caracteristicas que necesites saber.";
 	$_ENV["PROJECT_AUTHOR"] = "Facundo Gonzalez";
 	$_ENV["PROJECT_AUTHOR_CONTACT"] = "facundo.gonza2005@gmail.com";
-	$_ENV["PROJECT_WEB"] = "http://app-estacioncom.ar";
+	$_ENV["PROJECT_WEB"] = "http://app-estacion.com.ar";
 	// $_ENV["PROJECT_KEYWORDS"] = "Matias Baez,matias baez,mattprofe,MattProfe,Matt Profe,matt profe,programación,programacion,robotica,robótica,informática,informatica,desarrollo,web";
 
 
