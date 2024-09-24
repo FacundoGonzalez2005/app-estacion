@@ -6,16 +6,29 @@
 	<title>Landing</title>
 </head>
 <body>
-	{{PROJECT_NAME}}<br><br>
-	{{PROJECT_DESCRIPTION}}<br><br>
-
-	<button><a href="panel">Ir al panel</a></button><br><br>
-
-	Autor: {{PROJECT_AUTHOR}}<br>
-	Gmail: {{PROJECT_AUTHOR_CONTACT}}<br>
-	Url: {{PROJECT_WEB}}<br>
-	Cantidad de estaciones guardadas: 5<br>
+	<!-- {{PROJECT_WEB}} -->
+	<div class="contenedor-landing">
+		<header class="Presentacion">
+			<div class="titulo">
+				{{PROJECT_NAME}}
+			</div>
+			<div class="descripcion">
+				{{PROJECT_DESCRIPTION}}
+			</div>
+		</header>
+		<section class="boton">
+				<button><a href="panel">Ir al panel</a></button>
+		</section>
+		<footer class="informacion-autor">
+			<div class="autor">
+				{{PROJECT_AUTHOR}}
+			</div>
+			<div class="correo">
+				{{PROJECT_AUTHOR_CONTACT}}
+			</div>
+		</footer>
+	</div>
 	<br><br>
-
+	<br><br>
 </body>
 </html>
