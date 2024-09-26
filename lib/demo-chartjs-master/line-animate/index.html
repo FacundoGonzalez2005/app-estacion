@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gráfico-Animado</title>
+
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+	<style>
+		*{
+			margin: 0rem;
+			padding: 0rem;
+			box-sizing: border-box;
+			font-family: sans-serif;
+		}
+		main{
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+
+		}
+
+		#monitor{
+			border: solid 1px silver;
+			width: 300px;
+			border-radius: 8px;
+			margin-bottom: 1rem;
+		}
+
+		#monitor-container{
+			margin: 1rem;
+		}
+
+		#grafico-container{
+			width: 300px;
+			height: 400px;
+			border: solid 1px silver;
+			border-radius: 8px;
+		}
+
+		.caja {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			margin-bottom: 0.5rem;
+		}
+
+		.caja-title{
+			font-weight: bold;
+			color: rgb(102, 102, 102);
+		}
+
+		.caja-valor{
+			border: solid 1px silver;
+			border-radius: 8px;
+			text-align: center;
+			color: rgb(102, 102, 102);
+		}
+	</style>
+
+</head>
+<body>
+
+	<header>
+		<h1>Gráfico-Animado</h1>
+	</header>
+	
+	<main>
+
+		<!-- Contenedor del monitor instantaneo -->
+		<div id="monitor">
+			
+			<div id="monitor-container">
+				
+				<div class="caja">
+					<div class="caja-title">
+						PERIODO
+					</div>
+					<div id="periodo" class="caja-valor">
+						
+					</div>
+				</div>
+
+				<div class="caja">
+				
+					<div class="caja-title">
+						OFICIAL
+					</div>
+					<div id="oficial" class="caja-valor">
+						
+					</div>
+				
+				</div>
+				
+				<div class="caja">
+				
+					<div class="caja-title">
+						BLUE
+					</div>
+					<div id="blue" class="caja-valor">
+						
+					</div>
+				
+				</div>
+
+			</div>
+		</div>
+
+		<!-- Contenedor del gráfico -->
+		<div id="grafico-container">
+			<canvas id="grafico-dolar" style="width: 100%; height: 100%;"></canvas>
+		</div>
+
+	</main>
+	
+
+	<script type="text/javascript">
+
+		// variable que se usará para instanciar el gráfico
+		let grafico = null
+
+		// vectores para almacenar los valores del gráfico
+		let periodo	= []
+		let oficial = []
+		let blue = []
+
+
+		// Una vez cargado todo el DOM 
+		document.addEventListener("DOMContentLoaded", () => {
+
+			// Leemos los datos del JSON
+			loadDatos('dolar.json').then( data => {
+
+				// Contador para simular que los datos se estan leyendo de a uno
+				let cont = 0;
+
+				// llamamos a la función que ordena los datos de un registro y genera el gráfico
+				procesaDatos(data[cont])
+
+				// Cada 2 segundos agregamos un nuevo registro de datos al gráfico
+				setInterval(function(){
+
+					// Si llegamos al último registro volvemos al primero
+					if(cont<data.length-1){
+						cont++
+					}else{
+						cont = 0
+					}
+					
+					// llamamos a la función que ordena los datos de un registro y genera el gráfico
+					procesaDatos(data[cont])
+					
+				},2000)
+			})
+		})
+
+
+		// Lee el json con los datos
+		async function loadDatos(url){
+			const response = await fetch(url)
+			const data = await response.json()
+
+			return data
+		}
+
+
+		// Toma los datos de un registro y los agrega a los vectores correspondientes, luego los agrega a los datos para generar el gráfico
+		function procesaDatos(dato){
+
+			// Muestra los datos en el monitor
+			pintaMonitor(dato)
+	
+			// Agregamos el nuevo dato como una posición dentro del vector
+			periodo.push(dato.periodo)
+			oficial.push(dato.oficial)
+			blue.push(dato.blue)
+
+			// Si ya acumulamos 6 elementos borramos el primero
+			if(periodo.length>6){
+				periodo.splice(0,1);
+				oficial.splice(0,1);
+				blue.splice(0,1);
+			}
+
+			// Valores que se grafican
+			const valores = {
+				labels: periodo,
+				datasets: [{
+					label: 'Oficial', // detalle de la linea graficada
+					backgroundColor: 'rgb(25, 174, 49)', // color circulo
+					borderColor: 'rgb(25, 174, 49)', // color linea
+					data: oficial // valores a graficar
+				},{
+					label: 'Blue', 
+					backgroundColor: 'rgb(29, 155, 217)', 
+					borderColor: 'rgb(29, 155, 217)', 
+					data: blue
+				}]
+			}
+
+			// muestra el gráfico con el título
+			pintaGrafico(valores, 'Dolar histórico')
+		}
+
+
+		// muestra el gráfico
+		function pintaGrafico(valores, titulo){
+			// Opciones generales del gráfico
+			const options = {
+				indexAxis: 'x', // Orden de los ejes del gráfico
+				plugins: {
+					title: { 
+						display: true, // Mostrar el título
+						text: titulo, // Texto del título
+						font: {
+							size: 30 // Tamaño del título
+						}
+					}
+				},
+				animation: {
+					duration: 0
+				},
+				responsive: true,
+				responsiveAnimationDuration: 0,
+			}
+
+			// Información con la cual se genera el gráfico
+			const config = {
+				type: 'line',
+				data: valores,
+				options: options
+			}
+			
+			// si el objeto gráfico ya esta instanciado se destruye para que se vuelva a crear limpio
+			if(grafico!=null){
+		        grafico.destroy();
+		    }
+
+			// Crea el gráfico dentro del canvas
+			grafico = new Chart(document.querySelector("#grafico-dolar"), config)
+		}
+
+
+		// muestra los valores en el monitor
+		function pintaMonitor(valores){
+
+			let periodo = document.querySelector("#periodo")
+			let oficial = document.querySelector("#oficial")
+			let blue = document.querySelector("#blue")
+
+			periodo.innerHTML = valores.periodo
+			oficial.innerHTML = "$" + valores.oficial
+			blue.innerHTML = "$" + valores.blue
+
+		}
+
+	</script>
+
+</body>
+</html>
