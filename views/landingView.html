@@ -4,18 +4,33 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Landing</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+	<link rel="stylesheet" type="text/css" href="./views/css/styles.css">
 </head>
 <body>
-	{{PROJECT_NAME}}<br><br>
-	{{PROJECT_DESCRIPTION}}<br><br>
-
-	<button><a href="panel">Ir al panel</a></button><br><br>
-
-	Autor: {{PROJECT_AUTHOR}}<br>
-	Gmail: {{PROJECT_AUTHOR_CONTACT}}<br>
-	Url: {{PROJECT_WEB}}<br>
-	Cantidad de estaciones guardadas: {{CANT_LUGARES}}<br>
-	<br><br>
-
+	<!-- {{PROJECT_WEB}} -->
+	<div class="contenedor-landing">
+		<header class="presentacion">
+			<div class="titulo">
+				{{PROJECT_NAME}}
+			</div>
+			<div class="descripcion">
+				{{PROJECT_DESCRIPTION}}
+			</div>
+		</header>
+		<section class="boton">
+				Ir a panel
+				<i class="fa-solid fa-right-long"></i>
+				<button><a class="boton-panel" href="panel">Panel</a></button>
+		</section>
+		<footer class="informacion-autor">
+			<div class="autor">
+				Autor: {{PROJECT_AUTHOR}}
+			</div>
+			<div class="correo">
+				Gmail: {{PROJECT_AUTHOR_CONTACT}}
+			</div>
+		</footer>
+	</div>
 </body>
 </html>

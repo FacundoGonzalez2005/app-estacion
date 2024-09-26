@@ -1,31 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Panel</title>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+	<link rel="stylesheet" type="text/css" href="./views/css/styles.css">
+	<link rel="stylesheet" href="./views/css/material-icons.css">
 </head>
 <body>
 
-<!--{{PROJECT_NAME}}
-	{{PROJECT_DESCRIPTION}}
-	Autor: {{PROJECT_AUTHOR}}
-	Gmail: {{PROJECT_AUTHOR_CONTACT}}
-	Url: {{PROJECT_WEB}}
-	Cantidad de estaciones guardadas: {{CANT_LUGARES}}
--->
-	<h1>ESTACIONES</h1>
+	<!--
+		{{PROJECT_NAME}}
+		{{PROJECT_DESCRIPTION}}
+		Autor: {{PROJECT_AUTHOR}}
+		Gmail: {{PROJECT_AUTHOR_CONTACT}}
+		Url: {{PROJECT_WEB}}
+		Cantidad de estaciones guardadas: {{CANT_LUGARES}}
+	-->
 
-	<a class="estacion" href="detalle">
-		<div class="nombre">
-			Nombre
+	<div class="encabezado">
+		<div class="icono">
+			<a href="landing"><i class="fa-solid fa-left-long"></i></a>
 		</div>
-		<div class="ubicacion">
-			ubicacion
+		<div class="title-top">
+			<h1>ESTACIONES</h1>
 		</div>
-		<div class="visitas">
-			visitas
-		</div>
-	</a>
+	</div>
+
+	<div id="Listado-estaciones">
+
+	</div>
+
+	<script type="text/javascript">
+
+			document.addEventListener("DOMContentLoaded", () => {
+
+				loadEstaciones().then(data => {
+
+					console.log(data)
+
+					let listado = document.querySelector("#Listado-estaciones")
+			
+
+					for (var i = data.length - 1; i >= 0; i--) {
+						listado.innerHTML += `
+						<a class="tarjeta" href="/alumno/6916/app-estacion/detalle?chipid=${data[i].chipid}&&cant=1">
+							<div class="texto">
+								<div class="apodo">
+									${data[i].apodo}
+								</div>
+								<div class="ubicacion">
+									<i class="fa-solid fa-location-dot"></i>${data[i].ubicacion}
+								</div>
+								<div class="visitas">
+									<i class="fa-regular fa-eye"></i>${data[i].visitas}
+								</div>
+							</div>
+						</a>`
+					
+					}
+
+				})
+			})
+
+
+		async function loadEstaciones(){
+			const response = await fetch("https://mattprofe.com.ar/proyectos/app-estacion/datos.php?mode=list-stations")
+			const data = await response.json()			
+			return data
+		}
+
+	</script>
 </body>
 </html>
