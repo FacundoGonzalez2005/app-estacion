@@ -5,74 +5,234 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Detalles</title>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-	<link rel="stylesheet" type="text/css" href="./views/css/styles.css">
+	<link rel="stylesheet" type="text/css" href="../views/css/styles.css">
+
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <body>
-	<!--{{PROJECT_NAME}}
-		{{PROJECT_DESCRIPTION}}
-		Autor: {{PROJECT_AUTHOR}}
-		Gmail: {{PROJECT_AUTHOR_CONTACT}}
-		Url: {{PROJECT_WEB}}
-		Cantidad de estaciones guardadas: {{CANT_LUGARES}}
+	<!--
+	{{PROJECT_NAME}}
+	{{PROJECT_DESCRIPTION}}
+	Autor: {{PROJECT_AUTHOR}}
+	Gmail: {{PROJECT_AUTHOR_CONTACT}}
+	Url: {{PROJECT_WEB}}
+	Cantidad de estaciones guardadas: {{CANT_LUGARES}}
 	-->
-
 	<div class="encabezado">
 		<div class="icono">
-			<a href="panel"><i class="fa-solid fa-left-long"></i></a>
+			<a href="https://mattprofe.com.ar/alumno/6916/app-estacion/panel"><i class="fa-solid fa-left-long"></i></a>
 		</div>
 		<div class="title-top">
-			<h1>DETALLE ESTACION</h1>
+			<h1>DETALLE ESTACIÓN</h1>
 		</div>
 	</div>
-	
 
-	<div id="Listado-estaciones">
-
+	<div class="listado-botones">	
+		<div id="btn-temperatura" class="fila-botones">	
+			Temperatura
+		</div>
+		<div id="btn-humedad" class="fila-botones">	
+			Humedad
+		</div>
+		<div id="btn-fWI" class="fila-botones">	
+			FWI
+		</div>
+		<div id="btn-presion" class="fila-botones">	
+			Presion
+		</div>
+		<div id="btn-viento" class="fila-botones">	
+			Viento
+		</div>
 	</div>
 
+	<main>
+		<div id="grafico-container">
+			<canvas id="grafico-clima" style="width: 100%; height: 100%;"></canvas>
+		</div>
+	</main>
+
 	<script type="text/javascript">
-
-		// Evento que se ejecuta cuando se carga la pagina totalmente
-		document.addEventListener("DOMContentLoaded", () => {
-
-			// Ejemplo de uso
-			const parametro = getParameterByName('chipid');
-			buscar(parametro).then(data => {
-
-				console.log(data)
-
-				let listado = document.querySelector("#Listado-estaciones")
-					data.forEach(estaciones => {
-						listado.innerHTML +=`
-						<div class="tarjeta-detalle detalle">
-							<div class="texto">
-								<div class="apodo">
-									${estaciones.estacion}
-								</div>
-								<div class="ubicacion">
-									<i class="fa-solid fa-location-dot"></i>${estaciones.ubicacion}
-								</div>
-							</div>
-						</div>	
-						`
-					})	
-			})
-		})
-
-		function getParameterByName(name) {
-	    	const urlParams = new URLSearchParams(window.location.search);
-	    	return urlParams.get(name);
-		}
 		
-		// Hace la peticion asincrona al archivo php y recupera el Json con los datos
-	    async function buscar(parametro){
-	        /*< consulta a la API */
-	        const response = await fetch("https://mattprofe.com.ar/proyectos/app-estacion/datos.php?chipid="+parametro+ "&&cant=1");
-	        /*< convierte la respuesta a formato json */
-	        const data = await response.json();
-	        return data;
-	    }
+	let myChart;
+	const chart = document.getElementById('grafico-clima');
 
-	</script>
+	// Arreglos para almacenar los datos por tipo
+	const datos = {
+	    Temperatura: { valores: [], horas: [] },
+	    Humedad: { valores: [], horas: [] },
+	    FWI: { valores: [], horas: [] },
+	    Presion: { valores: [], horas: [] },
+	    Viento: { valores: [], horas: [] }
+	};
+
+	console.log(datos);
+
+	// Variables para almacenar el tipo de dato actual y última hora registrada
+	let tipoActual = "Temperatura";
+	let ultimaHoraAPI = null;
+
+	// Cargar los últimos 5 datos al iniciar
+	document.addEventListener("DOMContentLoaded", async () => {
+	    await cargarDatosIniciales(`https://mattprofe.com.ar/proyectos/app-estacion/datos.php?chipid={{CHIPID}}&cant=5`);
+	    setInterval(() => {
+	        agregarDatosIntermedios();
+	        loadDatos(`https://mattprofe.com.ar/proyectos/app-estacion/datos.php?chipid={{CHIPID}}&cant=1`);
+	    }, 60000); // Cada minuto
+	});
+
+	// Configurar eventos para los botones
+	document.querySelectorAll(".fila-botones").forEach(boton => {
+	    boton.addEventListener("click", () => {
+	        tipoActual = boton.innerText.trim();
+	        actualizarGrafico();
+	    });
+	})
+
+	async function cargarDatosIniciales(url) {
+	    try {
+	        const response = await fetch(url);
+	        const data = await response.json();
+	        console.log('Datos iniciales recibidos:', data);
+
+	        if (Array.isArray(data) && data.length > 0) {
+	            data.reverse().forEach(estacion => {
+	                if (estacion.fecha) {
+	                    const [fecha, horaCompleta] = estacion.fecha.split(" ");
+	                    const hora = horaCompleta.slice(0, 5); // Hora en formato HH:mm
+
+	                    // Procesar todos los tipos de datos
+	                    Object.keys(datos).forEach(tipo => {
+	                        if (estacion[tipo.toLowerCase()]) {
+	                            const valor = parseFloat(estacion[tipo.toLowerCase()]);
+	                            datos[tipo].valores.push(valor);
+	                            datos[tipo].horas.push(hora);
+
+	                            // Limitar a los últimos 6 datos
+	                            if (datos[tipo].valores.length > 6) {
+	                                datos[tipo].valores.shift();
+	                                datos[tipo].horas.shift();
+	                            }
+	                        }
+	                    });
+	                }
+	            });
+
+	            // Crear gráfico inicial
+	            actualizarGrafico();
+	        } else {
+	            console.warn('No se encontraron datos válidos en la API inicial.');
+	        }
+	    } catch (error) {
+	        console.error('Error al cargar datos iniciales:', error);
+	    }
+	}
+
+	async function loadDatos(url) {
+	    try {
+	        const response = await fetch(url);
+	        const data = await response.json();
+	        console.log('Datos recibidos:', data);
+
+	        if (data.length > 0) {
+	            const estacion = data[0];
+	            const [fecha, horaCompleta] = estacion.fecha.split(" ");
+	            const hora = horaCompleta.slice(0, 5); // Hora en formato HH:mm
+
+	            if (hora !== ultimaHoraAPI) {
+	                ultimaHoraAPI = hora;
+
+	                // Actualizar todos los tipos de datos
+	                Object.keys(datos).forEach(tipo => {
+	                    if (estacion[tipo.toLowerCase()]) {
+	                        const valor = parseFloat(estacion[tipo.toLowerCase()]);
+	                        datos[tipo].valores.push(valor);
+	                        datos[tipo].horas.push(hora);
+
+	                        // Limitar a los últimos 6 datos
+	                        if (datos[tipo].valores.length > 6) {
+	                            datos[tipo].valores.shift();
+	                            datos[tipo].horas.shift();
+	                        }
+	                    }
+	                });
+
+	                actualizarGrafico();
+	            }
+	        }
+	    } catch (error) {
+	        console.error('Error cargando los datos:', error);
+	    }
+	}
+
+	function agregarDatosIntermedios() {
+	    let ahora = new Date();
+
+	    // Incrementar el minuto actual
+	    ahora.setMinutes(ahora.getMinutes() + 1);
+	    const horaIntermedia = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
+
+	    // Verificar si la nueva hora ya está registrada
+	    const ultimasHoras = datos[tipoActual].horas;
+	    if (ultimasHoras.length === 0 || ultimasHoras[ultimasHoras.length - 1] !== horaIntermedia) {
+	        // Añadir la hora intermedia y mantener la última temperatura conocida
+	        if (datos[tipoActual].valores.length > 0) {
+	            const ultimoValor = datos[tipoActual].valores[datos[tipoActual].valores.length - 1];
+	            datos[tipoActual].valores.push(ultimoValor);
+	            datos[tipoActual].horas.push(horaIntermedia);
+
+	            // Limitar a los últimos 6 datos
+	            if (datos[tipoActual].valores.length > 6) {
+	                datos[tipoActual].valores.shift();
+	                datos[tipoActual].horas.shift();
+	            }
+	        }
+
+	        actualizarGrafico();
+	    } else {
+	        console.log(`Hora duplicada detectada: ${horaIntermedia}. No se agregó.`);
+	    }
+	}
+
+	function crearGrafico(tipo) {
+	    const opciones = {
+	        plugins: {
+	            title: {
+	                display: true,
+	                text: `${tipo} por Minuto`,
+	                font: { size: 20 },
+	                color: 'white'
+	            },
+	            legend: { labels: { color: 'white' } }
+	        },
+	        animation: { duration: 0 },
+	        responsive: true,
+	        scales: {
+	            x: { ticks: { color: 'white' } },
+	            y: { beginAtZero: true, ticks: { color: 'white' } }
+	        }
+	    };
+
+	    const datosGrafico = {
+	        labels: datos[tipo].horas,
+	        datasets: [{
+	            label: tipo,
+	            backgroundColor: 'rgba(0, 31, 173, 0.1)',
+	            borderColor: 'rgb(0, 31, 173)',
+	            data: datos[tipo].valores,
+	            fill: true
+	        }]
+	    };
+
+	    if (myChart) myChart.destroy();
+	    myChart = new Chart(chart, { type: 'line', data: datosGrafico, options: opciones });
+	}
+
+	function actualizarGrafico() {
+	    crearGrafico(tipoActual);
+	}
+</script>
+
+
 </body>
 </html>

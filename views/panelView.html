@@ -38,15 +38,22 @@
 			document.addEventListener("DOMContentLoaded", () => {
 
 				loadEstaciones().then(data => {
-
+					
 					console.log(data)
 
-					let listado = document.querySelector("#Listado-estaciones")
+					let listado = document.querySelector("#Listado-estaciones");
 			
 
 					for (var i = data.length - 1; i >= 0; i--) {
+
+						let diasInactivoHTML	 = '';
+
+						if (data[i].dias_inactivo!=0) {
+							diasInactivoHTML = `<div class="inactivo"><p>inactivo</p></div>`;
+						}
+
 						listado.innerHTML += `
-						<a class="tarjeta" href="/alumno/6916/app-estacion/detalle?chipid=${data[i].chipid}&&cant=1">
+						<a class="tarjeta" href="detalle/${data[i].chipid}">
 							<div class="texto">
 								<div class="apodo">
 									${data[i].apodo}
@@ -55,10 +62,11 @@
 									<i class="fa-solid fa-location-dot"></i>${data[i].ubicacion}
 								</div>
 								<div class="visitas">
+									${diasInactivoHTML}
 									<i class="fa-regular fa-eye"></i>${data[i].visitas}
 								</div>
 							</div>
-						</a>`
+						</a>`;
 					
 					}
 

@@ -15,6 +15,12 @@
 	// slug tiene valor
 	if($_GET['slug']!="")
 		$seccion = $_GET['slug'];
+	
+
+	if(strlen($_GET['slug'])!=0){
+		$pag = explode("/",$_GET['slug']);
+		$seccion = $pag[0];	
+	}
 
 	// verificamos que exista el controlador
 	if(!file_exists('controllers/'.$seccion.'Controller.php')){
