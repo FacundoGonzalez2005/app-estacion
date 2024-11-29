@@ -52,8 +52,7 @@
 		</div>
 	</main>
 
-	<script type="text/javascript">
-		
+<script type="text/javascript"> 
 	let myChart;
 	const chart = document.getElementById('grafico-clima');
 
@@ -87,112 +86,123 @@
 	        tipoActual = boton.innerText.trim();
 	        actualizarGrafico();
 	    });
-	})
+	});
 
 	async function cargarDatosIniciales(url) {
-	    try {
-	        const response = await fetch(url);
-	        const data = await response.json();
-	        console.log('Datos iniciales recibidos:', data);
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log('Datos iniciales recibidos:', data);
 
-	        if (Array.isArray(data) && data.length > 0) {
-	            data.reverse().forEach(estacion => {
-	                if (estacion.fecha) {
-	                    const [fecha, horaCompleta] = estacion.fecha.split(" ");
-	                    const hora = horaCompleta.slice(0, 5); // Hora en formato HH:mm
+        if (Array.isArray(data) && data.length > 0) {
+            data.reverse().forEach(estacion => {
+                if (estacion.fecha) {
+                    const [fecha, horaCompleta] = estacion.fecha.split(" ");
+                    const hora = horaCompleta.slice(0, 5); // Hora en formato HH:mm
 
-	                    // Procesar todos los tipos de datos
-	                    Object.keys(datos).forEach(tipo => {
-	                        if (estacion[tipo.toLowerCase()]) {
-	                            const valor = parseFloat(estacion[tipo.toLowerCase()]);
-	                            datos[tipo].valores.push(valor);
-	                            datos[tipo].horas.push(hora);
+                    // Procesar todos los tipos de datos
+                    Object.keys(datos).forEach(tipo => {
+                        if (estacion[tipo.toLowerCase()]) {
+                            const valor = parseFloat(estacion[tipo.toLowerCase()]);
+                            
+                            // Validar duplicados antes de agregar
+                            if (!datos[tipo].horas.includes(hora)) {
+                                datos[tipo].valores.push(valor);
+                                datos[tipo].horas.push(hora);
 
-	                            // Limitar a los últimos 6 datos
-	                            if (datos[tipo].valores.length > 6) {
-	                                datos[tipo].valores.shift();
-	                                datos[tipo].horas.shift();
-	                            }
-	                        }
-	                    });
-	                }
-	            });
+                                // Limitar a los últimos 6 datos
+                                if (datos[tipo].valores.length > 6) {
+                                    datos[tipo].valores.shift();
+                                    datos[tipo].horas.shift();
+                                }
+                            }
+                        }
+                    });
+                }
+            });
 
-	            // Crear gráfico inicial
-	            actualizarGrafico();
-	        } else {
-	            console.warn('No se encontraron datos válidos en la API inicial.');
-	        }
-	    } catch (error) {
-	        console.error('Error al cargar datos iniciales:', error);
-	    }
-	}
+            // Crear gráfico inicial
+            actualizarGrafico();
+        } else {
+            console.warn('No se encontraron datos válidos en la API inicial.');
+        }
+    } catch (error) {
+        console.error('Error al cargar datos iniciales:', error);
+    }
+}
 
 	async function loadDatos(url) {
-	    try {
-	        const response = await fetch(url);
-	        const data = await response.json();
-	        console.log('Datos recibidos:', data);
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log('Datos recibidos:', data);
 
-	        if (data.length > 0) {
-	            const estacion = data[0];
-	            const [fecha, horaCompleta] = estacion.fecha.split(" ");
-	            const hora = horaCompleta.slice(0, 5); // Hora en formato HH:mm
+        if (data.length > 0) {
+            const estacion = data[0];
+            const [fecha, horaCompleta] = estacion.fecha.split(" ");
+            const hora = horaCompleta.slice(0, 5); // Hora en formato HH:mm
 
-	            if (hora !== ultimaHoraAPI) {
-	                ultimaHoraAPI = hora;
+            if (hora !== ultimaHoraAPI) {
+                ultimaHoraAPI = hora;
 
-	                // Actualizar todos los tipos de datos
-	                Object.keys(datos).forEach(tipo => {
-	                    if (estacion[tipo.toLowerCase()]) {
-	                        const valor = parseFloat(estacion[tipo.toLowerCase()]);
-	                        datos[tipo].valores.push(valor);
-	                        datos[tipo].horas.push(hora);
+                Object.keys(datos).forEach(tipo => {
+                    if (estacion[tipo.toLowerCase()]) {
+                        const valor = parseFloat(estacion[tipo.toLowerCase()]);
 
-	                        // Limitar a los últimos 6 datos
-	                        if (datos[tipo].valores.length > 6) {
-	                            datos[tipo].valores.shift();
-	                            datos[tipo].horas.shift();
-	                        }
-	                    }
-	                });
+                        // Evitar duplicados
+                        if (!datos[tipo].horas.includes(hora)) {
+                            datos[tipo].valores.push(valor);
+                            datos[tipo].horas.push(hora);
 
-	                actualizarGrafico();
-	            }
-	        }
-	    } catch (error) {
-	        console.error('Error cargando los datos:', error);
-	    }
-	}
+                            // Limitar a los últimos 6 datos
+                            if (datos[tipo].valores.length > 6) {
+                                datos[tipo].valores.shift();
+                                datos[tipo].horas.shift();
+                            }
+                        }
+                    }
+                });
 
-	function agregarDatosIntermedios() {
-	    let ahora = new Date();
+                actualizarGrafico();
+            }
+        }
+    } catch (error) {
+        console.error('Error cargando los datos:', error);
+    }
+}
 
-	    // Incrementar el minuto actual
-	    ahora.setMinutes(ahora.getMinutes() + 1);
-	    const horaIntermedia = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
 
-	    // Verificar si la nueva hora ya está registrada
-	    const ultimasHoras = datos[tipoActual].horas;
-	    if (ultimasHoras.length === 0 || ultimasHoras[ultimasHoras.length - 1] !== horaIntermedia) {
-	        // Añadir la hora intermedia y mantener la última temperatura conocida
-	        if (datos[tipoActual].valores.length > 0) {
-	            const ultimoValor = datos[tipoActual].valores[datos[tipoActual].valores.length - 1];
-	            datos[tipoActual].valores.push(ultimoValor);
-	            datos[tipoActual].horas.push(horaIntermedia);
+function agregarDatosIntermedios() {
+    const ahora = new Date();
 
-	            // Limitar a los últimos 6 datos
-	            if (datos[tipoActual].valores.length > 6) {
-	                datos[tipoActual].valores.shift();
-	                datos[tipoActual].horas.shift();
-	            }
-	        }
+    // Incrementar el minuto actual
+    ahora.setMinutes(ahora.getMinutes() + 1);
+    const horaIntermedia = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
 
-	        actualizarGrafico();
-	    } else {
-	        console.log(`Hora duplicada detectada: ${horaIntermedia}. No se agregó.`);
-	    }
-	}
+    // Verificar duplicados y agregar
+    if (!datos[tipoActual].horas.includes(horaIntermedia)) {
+        const ultimosValores = datos[tipoActual].valores;
+
+        if (ultimosValores.length > 0) {
+            const ultimoValor = ultimosValores[ultimosValores.length - 1];
+            datos[tipoActual].valores.push(ultimoValor);
+            datos[tipoActual].horas.push(horaIntermedia);
+
+            // Limitar a los últimos 6 datos
+            if (datos[tipoActual].valores.length > 6) {
+                datos[tipoActual].valores.shift();
+                datos[tipoActual].horas.shift();
+            }
+
+            actualizarGrafico();
+        } else {
+            console.log('No hay datos previos para agregar la hora intermedia.');
+        }
+    } else {
+        console.log(`Hora duplicada detectada: ${horaIntermedia}. No se agregó.`);
+    }
+}
+
 
 	function crearGrafico(tipo) {
 	    const opciones = {
